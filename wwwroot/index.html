@@ -1,0 +1,560 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!--<meta http-equiv="Content-Security-Policy" content="default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;">
+        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
+        <title>Паспорт Казани</title>
+        <link rel="stylesheet" href="./css/style.css">
+        <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=621be811-2d42-457e-a014-904ec9f03a02&lang=ru_RU" harset="utf-8"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div id="left-container">
+                <div id="map"></div>
+                <!-- НЕ НАДО ТРОГАТЬ -->
+    <!--<div id="pdo-toolbar">
+                  <div><label><input type="checkbox" id="kvo" onclick="showPDO(1)"> КВО</label></div>
+                  <div><label><input type="checkbox" id="poo" onclick="showPDO(2)"> ПОО</label></div>
+                  <div><label><input type="checkbox" id="ojo" onclick="showPDO(3)"> ОЖО</label></div>
+                </div>-->
+                <div id="dopContainer">
+                    <p>Выберите таблицу к рассмотрению:</p>
+                    <select id="dopInfo">
+                        <option value="static/harkPOO.html">Характеристики ПОО</option>
+                        <option value="static/riskNatCS.html">Показатели риска природных ЧС</option>
+                        <option value="static/pooCS.html">ЧС на различных ПОО</option>
+                        <option value="static/bioSocCS.html">Показатели риска биолого-социальных ЧС</option>
+                        <option value="static/orgTec.html">Характеристики организационно-технических мероприятий по защите населения</option>
+                        <option value="static/obshCS.html">Общие сведения о Казани</option>
+                        <option value="static/istochnikCS.html">Источники ЧС</option>
+                        <option value="static/pokazateli.html">Показатели Сендайской рамочной программы</option>
+                    </select>
+                    <button onclick="getDopTable()">Посмотреть</button>
+
+                </div>
+                <div id="squareContainer"><img id="square" src="images/area.png"></div>
+                <div id="terdelContainer"><img id="terdel" src="images/terdel.png"></div>
+                <div id="roadsContainer"><img id="roads" src="images/roads.png"></div>
+                <!-- --------------- -->
+                <div id="chart"></div>
+            </div>
+            <div id="right-container">
+                <div id="select-container">
+                    <select id="main-select">
+                        <option>Общая характеристика территории</option>
+                    </select>
+                    <button onclick=backToMap()>Стартовая карта</button>
+                </div>
+                <div id="input-container">
+                    <p>Введите ваш ключ доступа: <input id="Key" type="text" size="60"></p>
+                    <button id="acc" onclick="accessCtrl()">Отправить</button>
+                </div>
+                <div id="functional-container">
+                    <button id="add" onclick="addObject()">Добавить объект</button>
+                    <button id="exit" onclick="exitFromAdd()">Выход</button>
+                </div>
+                <div id="post">
+                    <p>Выберите какой объект желаете добавить:</p>
+                    <select id="objectSelect">
+                        <option value="poo">ПОО (Потенциально опасный объект)</option>
+                        <option value="kvo">КВО (Критически важный объект)</option>
+                        <option value="bridg">Автомобильный мост по направлению</option>
+                        <option value="hospital">Медицинское учреждение</option>
+                        <option value="infec">Медицинское учреждение с инфекционным отделением</option>
+                    </select>
+                    <p>Введите название объекта: <input id="Name" type="text" size="50"></p>
+                    <p>Введите широту: <input id="Coordinate1" type="number" size="50"></p>
+                    <p>Введите долготу: <input id="Coordinate2" type="number" size="50"></p>
+                    <p>Введите дополнительную информацию (обязательно для объекта типа ПОО): <input id="Extra" type="text" size="50"></p>
+                    <button onclick="postServer()">Отправить</button>
+                </div>
+                <div id="table-container">
+                    <table id="obshaya-harack" class="table">
+                        <!--ЗАГОЛОВОК-->
+                        <tr>
+                            <th>Наименование показателя</th>
+                            <th>Значение показателя на момент разработки паспорта</th>
+                        </tr>
+                        <!--Пункт 1-->
+                        <tr>
+                            <td>Общая численность населения </td>
+                            <td><a onclick="chislNasl()">1 257 341 чел.</a></td>
+                        </tr>
+                        <!--Пункт 2-->
+                        <tr>
+                            <td>
+                                <p>Площадь территории</p>
+                            </td>
+                            <td>
+                                <p onclick="showSquare()"><a>63 839,55 га (638,4 км<sup>2</sup>)</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 3-->
+                        <tr>
+                            <td>
+                                <p>Территориальное деление</p>
+                            </td>
+                            <td>
+                                <p onclick="showTerDel()"><a>1 (7 районов)</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 4-->
+                        <tr>
+                            <td>
+                                <p>Количество населенных пунктов</p>
+                            </td>
+                            <td>
+                                <p onclick="showNaslPunkt()"><a>7</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 5-->
+                        <tr>
+                            <td>
+                                <p>Численность населения</p>
+                            </td>
+                            <td>
+                                <p>1 257 341 чел.</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 6-->
+                        <tr>
+                            <td>
+                                <p>Количество населенных пунктов с объектами особой важности (ОВ) и I категории, единиц</p>
+                            </td>
+                            <td>
+                                <p>1</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 7-->
+                        <tr>
+                            <td>
+                                <p>Численность населения, проживающего в населенных пунктах с объектами ОВ и I категории</p>
+                            </td>
+                            <td>
+                                <p>1 257,341 чел. / 100 %</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 8-->
+                        <tr>
+                            <td>
+                                <p>Плотность населения</p>
+                            </td>
+                            <td>
+                                <p><a onclick="plotNasl()">1,97 тыс. чел./км<sup>2</sup> </a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 9-->
+                        <tr>
+                            <td>
+                                <p>Количество потенциально опасных объектов</p>
+                            </td>
+                            <td>
+                                <p onclick=getPOO()><a>45</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 10-->
+                        <tr>
+                            <td>
+                                <p>Количество критически важных объектов</p>
+                            </td>
+                            <td>
+                                <p onclick=getKVO()><a>32</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 11-->
+                        <tr>
+                            <td>
+                                <p>Степень износа производственного фонда</p>
+                            </td>
+                            <td>
+                                <p><a onclick="iznosProizv()">40,7</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 12-->
+                        <tr>
+                            <td>
+                                <p>Степень износа жилого фонда</p>
+                            </td>
+                            <td>
+                                <p>38 %</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 13-->
+                        <tr>
+                            <td>
+                                <p>Количество больничных учреждений</p>
+                            </td>
+                            <td>
+                                <p onclick="hospitalMap()"><a>226</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 14-->
+                        <tr>
+                            <td>
+                                <p>Количество инфекционных стационаров</p>
+                            </td>
+                            <td>
+                                <p onclick=getInfec()><a>4</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 15-->
+                        <tr>
+                            <td>
+                                <p>Число больничных коек</p>
+                            </td>
+                            <td>
+                                <p>3388 шт.</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 16-->
+                        <tr>
+                            <td>
+                                <p>Число больных коек в инфекционных стационарах</p>
+                            </td>
+                            <td>
+                                <p>630</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 17-->
+                        <tr>
+                            <td>
+                                <p>Численность персонала всех медицинских специальностей</p>
+                            </td>
+                            <td>
+                                <p>74,7 чел./10000 жителей</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 18-->
+                        <tr>
+                            <td>
+                                <p>Численность среднего медицинского персонала, чел./10000 жителей</p>
+                            </td>
+                            <td>
+                                <p>48,7 чел./10000 жителей</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 19-->
+                        <tr>
+                            <td>
+                                <p>Количество мест массового скопления людей</p>
+                            </td>
+                            <td>
+                                <p><a onclick="masSkop()">189</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 20-->
+                        <tr>
+                            <td>
+                                <p>Количество чрезвычайных ситуаций</p>
+                            </td>
+                            <!--<td><p onclick="collCS()"><a >0 (ЧС техногенного и природного характера)</a></p>
+        </td>-->
+                            <td><p>0 (ЧС техногенного и природного характера)</p></td>
+                        </tr>
+                        <!--Пункт 21-->
+                        <tr>
+                            <td>
+                                <p>Размер ущерба при чрезвычайных ситуациях</p>
+                            </td>
+                            <td>
+                                <p>0 (ЧС техногенного и природного характера)</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 22-->
+                        <tr>
+                            <td>
+                                <p>Показатель комплексного риска для населения и территории от чрезвычайных ситуаций природного и техногенного характера</p>
+                            </td>
+                            <td><p>2,1*10<sup>-5</sup></p></td>
+                        </tr>
+                        <!--Пункт 23-->
+                        <tr>
+                            <td>
+                                <p>Показатель приемлемого риска для персонала и населения</p>
+                            </td>
+                            <!--<td><p onclick="priemRisk()"><a >1,05*10<sup>-5</sup></a></p>
+        </td>-->
+                            <td><p>1,05*10<sup>-5</sup></p></td>
+                        </tr>
+                        <!--Пункт 24-->
+                        <tr>
+                            <td>
+                                <p>Средняя продолжительность жизни населения</p>
+                            </td>
+                            <td>
+                                <p>Городское население: 73,31</p>
+                                <p>Мужчины: 67,95</p>
+                                <p>Женщины: 77,97</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 25-->
+                        <tr>
+                            <td>
+                                <p>Рождаемость</p>
+                            </td>
+                            <td>
+                                <p onclick="rojdStat()"><a>19777 чел./год</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 26-->
+                        <tr>
+                            <td>
+                                <p>Естественный прирост</p>
+                            </td>
+                            <td>
+                                <p onclick="estPrirost()"><a>16758 чел./год</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 27-->
+                        <tr>
+                            <td>
+                                <p>Общая смертность населения</p>
+                            </td>
+                            <td>
+                                <p onclick="obshSmert()"><a>13,33 чел./год на 1000 жителей</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 28-->
+                        <tr>
+                            <td>
+                                <p>Количество погибших</p>
+                            </td>
+                            <td>
+                                <p onclick="collPogib()"><a>Общее: 77 чел.</a></p>
+                                <p>В транспортных происшествиях: 51 чел.</p>
+                                <p>При пожарах: 26 чел.</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 29-->
+                        <tr>
+                            <td>
+                                <p>Численность трудоспособного населения</p>
+                            </td>
+                            <td>
+                                <p>707 280 чел.</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 30-->
+                        <tr>
+                            <td>
+                                <p>Численность занятых в общественном производстве</p>
+                            </td>
+                            <td>
+                                <p onclick="chislZanat()">
+                                    <a>
+                                        1297,8 тыс. чел./%
+                                        от трудоспособности населения
+                                    </a>
+                                </p>
+                            </td>
+                        </tr>
+                        <!--Пункт 31-->
+                        <tr>
+                            <td>
+                                <p>Общая численность пенсионеров</p>
+                            </td>
+                            <td>
+                                <p>345 417</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 32-->
+                        <tr>
+                            <td>
+                                <p>Количество преступлений на 1000 чел</p>
+                            </td>
+                            <td>
+                                <p onclick="collPrestupl()"><a>19,15</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 33-->
+                        <tr>
+                            <td>
+                                <p>Среднегодовые: направление ветра, румбы, скорость ветра</p>
+                            </td>
+                            <td>
+                                <p>Направление ветра: ю-з, ю</p>
+                                <p>Скорость ветра: 16,92 км/ч</p>
+                                <p>Относительная влажность воздуха: 67%</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 34-->
+                        <tr>
+                            <td>
+                                <p>Максимальные значения скорости ветра по сезонам</p>
+                            </td>
+                            <td>
+                                <p onclick="maxScorVetra()"><a>Статистика:</a></p>
+                                <p>Весна: 13,8 км/ч</p>
+                                <p>Лето: 12,7 км/ч</p>
+                                <p>Осень: 12,2 км/ч</p>
+                                <p>Зима: 12,4 км/ч</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 35-->
+                        <tr>
+                            <td>
+                                <p>Количество атмосферных осадков</p>
+                            </td>
+                            <td>
+                                <p onclick="collAtmOsad()"><a>601 мм среднегодовое максимальное</a></p>
+                                <p>Лето: 38%</p>
+                                <p>Осень: 27%</p>
+                                <p>Зима: 16%</p>
+                                <p>Весна: 19%</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 36-->
+                        <tr>
+                            <td>
+                                <p>Температура</p>
+                            </td>
+                            <td>
+                                <p onclick="srTemper()"><a>4,6 среднегодовая максимальная</a></p>
+                                <p>Лето: 20,1</p>
+                                <p>Зима: -10,7</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 37-->
+                        <tr>
+                            <td>
+                                <p>Протяжность железнодорожных путей</p>
+                            </td>
+                            <td>
+                                <p>876,8 км</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 38-->
+                        <tr>
+                            <td>
+                                <p>Протяженность автомобильных дорог</p>
+                            </td>
+                            <td>
+                                <p onclick="showRoads()"><a>1796 км</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 39-->
+                        <tr>
+                            <td>
+                                <p>Количество населенных пунктов, не обеспеченных подъездными дорогами с твердым покрытием</p>
+                            </td>
+                            <td>
+                                <p>Отсутствуют</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 40-->
+                        <tr>
+                            <td>
+                                <p>Количество населенных пунктов, не обеспеченных телефонной связью</p>
+                            </td>
+                            <td>
+                                <p>Отсутствуют</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 41-->
+                        <tr>
+                            <td>
+                                <p>Административные районы, в пределах которых расположены участки железных дорог, подверженных размыву, затоплению, лавиноопасные, оползневые и др.</p>
+                            </td>
+                            <td>
+                                <p>Отсутствуют</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 42-->
+                        <tr>
+                            <td>
+                                <p>Административные районы, в пределах которых расположены участки автомагистралей, подверженных размыву, затоплению, лавиноопасные, оползневые и др.</p>
+                            </td>
+                            <td>
+                                <p>Отсутствуют</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 43-->
+                        <tr>
+                            <td>
+                                <p>Количество автомобильных мостов по направлениям</p>
+                            </td>
+                            <td>
+                                <p onclick=getBridges()><a>41</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 44-->
+                        <tr>
+                            <td>
+                                <p>Количество железнодорожных мостов по направлениям</p>
+                            </td>
+                            <td>
+                                <p>8</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 45-->
+                        <tr>
+                            <td>
+                                <p>Протяженность водных путей</p>
+                            </td>
+                            <td>
+                                <p>37 км</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 46-->
+                        <tr>
+                            <td>
+                                <p>Количество основных портов, пристаней и их перечень</p>
+                            </td>
+                            <td>
+                                <p>р.Волга, 1310-1311 км с.х. (ОАО СК "Татфлот")</p>
+                                <p onclick=getPort()><a>Посмотреть</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 47-->
+                        <tr>
+                            <td>
+                                <p>Количество шлюзов и каналов</p>
+                            </td>
+                            <td>
+                                <p>1</p>
+                            </td>
+                        </tr>
+                        <!--Пункт 48-->
+                        <tr>
+                            <td>
+                                <p>Количество аэропортов и посадочных площадок и их местоположение</p>
+                            </td>
+                            <td>
+                                <p>Международный аэропорт Казань имени Габдуллы Тукая</p>
+                                <p onclick=getAirPort()><a>Посмотреть</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 49-->
+                        <tr>
+                            <td>
+                                <p>Протяженность магистральных трубопроводов</p>
+                            </td>
+                            <td>
+                                <p onclick="magTruboprov()"><a>подробнее</a></p>
+                            </td>
+                        </tr>
+                        <!--Пункт 50-->
+                        <tr>
+                            <td>
+                                <p>Протяженность линий электропередачи</p>
+                            </td>
+                            <td>
+                                <p onclick="lineElektro()"><a>подробнее</a></p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript" src="scripts/chart.js" charset="utf-8"></script>
+        <script type="text/javascript" src="scripts/squareContainer.js" charset="utf-8"></script>
+        <script type="text/javascript" src="scripts/terdelContainer.js" charset="utf-8"></script>
+        <script type="text/javascript" src="scripts/roadsContainer.js" charset="utf-8"></script>
+        <script type="text/javascript" src="scripts/map.js"></script>
+        <script type="text/javascript" src="scripts/input.js" charset="utf-8"></script>
+        <script type="text/javascript" src="scripts/functional.js" charset="utf-8"></script>
+        <script type="text/javascript" src="scripts/dopContainer.js" charset="utf-8"></script>
+    </body>
+    </html>

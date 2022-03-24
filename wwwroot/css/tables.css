@@ -1,0 +1,37 @@
+table
+ {
+  border: 5px solid black;
+  margin-left: 2%;
+  margin-right: 2%;
+ }
+
+ h1
+ {
+   text-align: center;
+ }
+
+ td, th
+ {
+  border: 2px solid black;
+  text-align: center;
+ }
+
+ th
+ {
+  background: #ffd300;
+ }
+
+ button
+{
+    background-color: #ffd300;
+    border: 2px solid;
+    margin-left: 2pt;
+    margin-top: 2pt;
+    margin-bottom: 4pt;
+    margin-right: 2pt;
+    position: fixed;
+    right:2%;
+    top:5%;
+    height: 3%;
+    width: 10%;
+}
